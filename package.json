@@ -1,6 +1,6 @@
 {
   "name": "francy-scripts",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Gerador de scripts de atendimento WhatsApp - Farmácia Francy",
   "main": "main.js",
   "author": "Farmácia Francy",
