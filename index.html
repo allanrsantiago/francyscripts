@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+<title>Francy Scripts</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <div class="app">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">+</div>
+        <div class="brand-text">
+          <span class="brand-name">Francy Scripts <span class="brand-version" id="brand-version"></span></span>
+          <span class="brand-sub">Atendimento WhatsApp · Farmácias Francy</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btn-pin" type="button" title="Manter esta janela sempre visível por cima das outras">
+          <span class="pin-icon">📌</span> <span class="pin-label">Fixar</span>
+        </button>
+        <button class="topbar-btn" id="btn-settings" type="button" title="Configurações (requer senha)">
+          <span class="settings-icon">⚙️</span> Config.
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="boasvindas" role="tab" aria-selected="true">
+        <span class="tab-num">01</span> Boas-vindas
+      </button>
+      <button class="tab" data-tab="resumo" role="tab" aria-selected="false">
+        <span class="tab-num">02</span> Resumo do pedido
+      </button>
+      <button class="tab" data-tab="entrega" role="tab" aria-selected="false">
+        <span class="tab-num">03</span> Entrega
+      </button>
+      <button class="tab" data-tab="forahorario" role="tab" aria-selected="false">
+        <span class="tab-num">04</span> Fora do horário
+      </button>
+    </nav>
+
+    <main class="content">
+
+      <!-- ===================== PAINEL 1 · BOAS-VINDAS ===================== -->
+      <section class="panel active" id="panel-boasvindas">
+        <div class="field">
+          <label>Atendentes <span class="label-hint">(selecione qual entra na mensagem)</span></label>
+          <div id="atendentes-list"></div>
+          <button class="btn-add" id="add-atendente" type="button">+ Adicionar atendente</button>
+        </div>
+      </section>
+
+      <!-- ===================== PAINEL 2 · RESUMO DO PEDIDO ===================== -->
+      <section class="panel" id="panel-resumo">
+        <div class="items-head">
+          <span>Qtd</span>
+          <span>Descrição do produto</span>
+          <span>Valor</span>
+          <span></span>
+        </div>
+        <div id="items-list"></div>
+
+        <div class="resumo-actions">
+          <button class="btn-add" id="add-item" type="button">+ Adicionar item</button>
+          <button class="btn-clear" id="clear-resumo" type="button">🗑 Novo pedido</button>
+        </div>
+
+        <div class="field field-taxa">
+          <label for="taxa-entrega">Taxa de entrega (R$)</label>
+          <input type="text" inputmode="decimal" id="taxa-entrega" placeholder="0,00" />
+        </div>
+
+        <div class="total-row">
+          <span>Total do pedido</span>
+          <span id="total-valor">R$ 0,00</span>
+        </div>
+      </section>
+
+      <!-- ===================== PAINEL 3 · ENTREGA ===================== -->
+      <section class="panel" id="panel-entrega">
+        <div class="field">
+          <label for="link-entrega">Link de rastreamento</label>
+          <div class="input-with-action">
+            <input type="text" id="link-entrega" placeholder="Cole aqui o link de rastreamento" autocomplete="off" />
+            <button class="btn-clear-inline" id="clear-link" type="button" title="Limpar link">×</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PAINEL 4 · FORA DO HORÁRIO ===================== -->
+      <section class="panel" id="panel-forahorario">
+        <div class="field">
+          <label for="forahorario-atendente">Atendente que vai enviar a saudação</label>
+          <select id="forahorario-atendente"></select>
+        </div>
+        <button class="btn-add" id="btn-copy-saudacao" type="button">⧉ Copiar saudação com esse atendente</button>
+
+        <p class="static-hint">O script de fora do horário abaixo é fixo — confira a prévia ao lado e use "Copiar mensagem" no rodapé. Use o botão acima para copiar a saudação da aba Boas-vindas sem precisar trocar de tela.</p>
+      </section>
+
+    </main>
+
+    <!-- ===================== PRÉVIA WHATSAPP ===================== -->
+    <div class="preview-dock">
+      <div class="preview-label">Prévia da mensagem</div>
+      <div class="phone-frame">
+        <div class="chat-bg">
+          <div class="bubble" id="preview-bubble"></div>
+        </div>
+      </div>
+      <button class="btn-copy" id="btn-copy" type="button">
+        <span class="copy-icon">⧉</span> Copiar mensagem
+      </button>
+      <div class="copy-toast" id="copy-toast">Copiado!</div>
+    </div>
+
+  </div>
+
+  <!-- ===================== POPUP · ATUALIZAÇÃO DISPONÍVEL ===================== -->
+  <div class="update-toast" id="update-toast" role="button" tabindex="0" aria-live="polite">
+    <button class="update-toast-close" id="update-toast-close" type="button" aria-label="Fechar aviso">×</button>
+    <div class="update-toast-icon">⬆️</div>
+    <div class="update-toast-text">
+      <strong>Atualização pronta</strong>
+      <span>Clique para reiniciar e instalar</span>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · SENHA ===================== -->
+  <div class="modal-overlay" id="password-overlay">
+    <div class="modal-box">
+      <h2 class="modal-title">🔒 Configurações protegidas</h2>
+      <p class="modal-desc">Digite a senha para editar os textos padrão dos scripts.</p>
+      <input type="password" id="password-input" class="modal-input" placeholder="Senha" autocomplete="off" />
+      <p class="modal-error" id="password-error"></p>
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="password-cancel" type="button">Cancelar</button>
+        <button class="btn-modal-primary" id="password-confirm" type="button">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · CONFIGURAÇÕES ===================== -->
+  <div class="modal-overlay" id="settings-overlay">
+    <div class="modal-box modal-box-lg">
+      <h2 class="modal-title">⚙️ Configurações dos scripts</h2>
+      <p class="modal-desc">Edite os textos padrão usados nas telas. Os trechos entre chaves duplas, como <code>{{ATENDENTE}}</code> e <code>{{LINK}}</code>, são preenchidos automaticamente pelo app e precisam continuar no texto.</p>
+
+      <div class="settings-field">
+        <label>Saudação (tela 01) <span class="label-hint">mantenha {{ATENDENTE}}</span></label>
+        <textarea id="cfg-boasvindas" rows="7"></textarea>
+      </div>
+
+      <div class="settings-field">
+        <label>Entrega (tela 03) <span class="label-hint">mantenha {{LINK}}</span></label>
+        <textarea id="cfg-entrega" rows="10"></textarea>
+      </div>
+
+      <div class="settings-field">
+        <label>Fora do horário / iFood (tela 04)</label>
+        <textarea id="cfg-forahorario" rows="5"></textarea>
+      </div>
+
+      <p class="modal-error" id="settings-error"></p>
+
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="settings-restore" type="button">Restaurar padrão</button>
+        <button class="btn-modal-secondary" id="settings-cancel" type="button">Cancelar</button>
+        <button class="btn-modal-primary" id="settings-save" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <template id="atendente-row-template">
+    <div class="atendente-row">
+      <input type="radio" name="atendente-select" class="atendente-radio" title="Usar este atendente na mensagem" />
+      <input type="text" class="atendente-nome" placeholder="Nome do atendente" autocomplete="off" />
+      <button class="atendente-remove" type="button" title="Remover atendente">×</button>
+    </div>
+  </template>
+
+  <template id="item-row-template">
+    <div class="item-row">
+      <input type="text" class="item-qtd" placeholder="1" inputmode="numeric" />
+      <input type="text" class="item-desc" placeholder="Descrição do produto" />
+      <input type="text" class="item-valor" placeholder="0,00" inputmode="decimal" />
+      <button class="item-remove" type="button" title="Remover item">×</button>
+    </div>
+  </template>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
