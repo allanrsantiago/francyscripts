@@ -1,0 +1,61 @@
+{
+  "name": "francy-scripts",
+  "version": "1.5.9",
+  "description": "Gerador de scripts de atendimento WhatsApp - Farmácia Francy",
+  "main": "main.js",
+  "author": "Farmácia Francy",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.farmaciafrancy.scripts",
+    "productName": "Francy Scripts",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "styles.css",
+      "renderer.js",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Francy Scripts",
+      "artifactName": "FrancyScripts-Instalador.exe"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "allanrsantiago",
+      "repo": "francyscripts",
+      "releaseType": "release"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}
