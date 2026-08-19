@@ -1,0 +1,33 @@
+name: Build e Release
+
+# Roda automaticamente sempre que uma tag no formato vX.Y.Z é enviada
+# (ex.: v1.0.1). É assim que uma nova versão é publicada.
+on:
+  push:
+    tags:
+      - "v*"
+
+# Necessário para o robô poder criar a Release e anexar o instalador nela.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build e publicação no GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win nsis --x64 --publish always
