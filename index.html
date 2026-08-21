@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+<title>Francy Scripts</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+
+  <div class="app">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">+</div>
+        <div class="brand-text">
+          <span class="brand-name">Francy Scripts <span class="brand-version" id="brand-version"></span></span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="btn-pin" type="button" title="Manter esta janela sempre visível por cima das outras">
+          <span class="pin-icon">📌</span>
+        </button>
+        <button class="topbar-btn" id="btn-endereco" type="button" title="Copiar endereço da unidade">
+          <span class="endereco-icon">📍</span>
+        </button>
+        <button class="topbar-btn" id="btn-telefones" type="button" title="Telefones das unidades">
+          <span class="tel-icon">📞</span>
+        </button>
+        <button class="topbar-btn" id="btn-validar-receitas" type="button" title="Validar Receitas — abre o Validador de Assinaturas do ITI no navegador">
+          <span class="validar-icon">🔏</span>
+        </button>
+        <button class="topbar-btn" id="btn-prodoctor" type="button" title="ProDoctor Medicamentos — abre a referência de medicamentos no navegador">
+          <span class="prodoctor-icon">💊</span>
+        </button>
+        <button class="topbar-btn" id="btn-dispensacao" type="button" title="Cálculo de dispensação (controlados e antibióticos)">
+          <span class="disp-icon">🧮</span>
+        </button>
+        <button class="topbar-btn" id="btn-parcial" type="button" title="Parcial de vendas (requer senha)">
+          <span class="parcial-icon">📊</span>
+        </button>
+        <button class="topbar-btn" id="btn-settings" type="button" title="Configurações (requer senha)">
+          <span class="settings-icon">⚙️</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="boasvindas" role="tab" aria-selected="true">
+        <span class="tab-num">01</span> Boas-vindas
+      </button>
+      <button class="tab" data-tab="resumo" role="tab" aria-selected="false">
+        <span class="tab-num">02</span> Resumo do pedido
+      </button>
+      <button class="tab" data-tab="entrega" role="tab" aria-selected="false">
+        <span class="tab-num">03</span> Entrega
+      </button>
+      <button class="tab" data-tab="forahorario" role="tab" aria-selected="false">
+        <span class="tab-num">04</span> Fora do horário
+      </button>
+    </nav>
+
+    <main class="content">
+
+      <!-- ===================== PAINEL 1 · BOAS-VINDAS ===================== -->
+      <section class="panel active" id="panel-boasvindas">
+        <div class="field">
+          <label>Atendentes <span class="label-hint">(selecione qual entra na mensagem)</span></label>
+          <div id="atendentes-list"></div>
+          <button class="btn-add" id="add-atendente" type="button">+ Adicionar atendente</button>
+        </div>
+      </section>
+
+      <!-- ===================== PAINEL 2 · RESUMO DO PEDIDO ===================== -->
+      <section class="panel" id="panel-resumo">
+        <div class="items-head">
+          <span>Qtd</span>
+          <span>Descrição do produto</span>
+          <span>Valor</span>
+          <span></span>
+        </div>
+        <div id="items-list"></div>
+
+        <div class="resumo-actions">
+          <button class="btn-add" id="add-item" type="button">+ Adicionar item</button>
+          <button class="btn-clear" id="clear-resumo" type="button">🗑 Novo pedido</button>
+        </div>
+
+        <div class="field field-taxa">
+          <label for="taxa-entrega">Taxa de entrega (R$)</label>
+          <input type="text" inputmode="decimal" id="taxa-entrega" placeholder="0,00" />
+        </div>
+
+        <div class="total-row">
+          <span>Total do pedido</span>
+          <span id="total-valor">R$ 0,00</span>
+        </div>
+      </section>
+
+      <!-- ===================== PAINEL 3 · ENTREGA ===================== -->
+      <section class="panel" id="panel-entrega">
+        <div class="field">
+          <label for="link-entrega">Link de rastreamento</label>
+          <div class="input-with-action">
+            <input type="text" id="link-entrega" placeholder="Cole aqui o link de rastreamento" autocomplete="off" />
+            <button class="btn-clear-inline" id="clear-link" type="button" title="Limpar link">×</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PAINEL 4 · FORA DO HORÁRIO ===================== -->
+      <section class="panel" id="panel-forahorario">
+        <div class="field">
+          <label for="forahorario-atendente">Atendente que vai enviar a saudação</label>
+          <select id="forahorario-atendente"></select>
+        </div>
+        <button class="btn-add" id="btn-copy-saudacao" type="button">⧉ Copiar saudação com esse atendente</button>
+
+        <p class="static-hint">O script de fora do horário abaixo é fixo — confira a prévia ao lado e use "Copiar mensagem" no rodapé. Use o botão acima para copiar a saudação da aba Boas-vindas sem precisar trocar de tela.</p>
+      </section>
+
+    </main>
+
+    <!-- ===================== PRÉVIA WHATSAPP ===================== -->
+    <div class="preview-dock">
+      <div class="preview-label">Prévia da mensagem</div>
+      <div class="phone-frame">
+        <div class="chat-bg">
+          <div class="bubble" id="preview-bubble"></div>
+        </div>
+      </div>
+      <button class="btn-copy" id="btn-copy" type="button">
+        <span class="copy-icon">⧉</span> Copiar mensagem
+      </button>
+      <div class="copy-toast" id="copy-toast">Copiado!</div>
+    </div>
+
+  </div>
+
+  <!-- ===================== POPUP · ATUALIZAÇÃO DISPONÍVEL ===================== -->
+  <div class="update-toast" id="update-toast" role="button" tabindex="0" aria-live="polite">
+    <button class="update-toast-close" id="update-toast-close" type="button" aria-label="Fechar aviso">×</button>
+    <div class="update-toast-icon">⬆️</div>
+    <div class="update-toast-text">
+      <strong>Atualização pronta</strong>
+      <span>Clique para reiniciar e instalar</span>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · CÁLCULO DE DISPENSAÇÃO ===================== -->
+  <div class="modal-overlay" id="dispensacao-overlay">
+    <div class="modal-box modal-box-lg">
+      <h2 class="modal-title">🧮 Cálculo de Dispensação</h2>
+      <p class="modal-desc">
+        Baseado na Portaria SVS/MS nº 344/98 (medicamentos controlados) e na RDC nº 20/2011 (antibióticos).
+        Esta calculadora é um apoio — sempre confira a prescrição, a apresentação disponível e use seu
+        julgamento profissional antes de liberar.
+      </p>
+
+      <div class="settings-field">
+        <label for="disp-tipo">Tipo de receituário</label>
+        <select id="disp-tipo">
+          <option value="c1">C1 — Receituário de Controle Especial — até 60 dias</option>
+          <option value="b1">B1 — Notificação Azul (psicotrópicos) — até 60 dias</option>
+          <option value="b2">B2 — Notificação Azul (anorexígenos) — até 30 dias</option>
+          <option value="a">A — Notificação Amarela (entorpecentes/psicotrópicos) — até 30 dias</option>
+          <option value="antibiotico">Antibiótico — receita simples (RDC 20/2011)</option>
+        </select>
+      </div>
+
+      <!-- Campos para medicamentos controlados (C1 / B1 / B2 / A) -->
+      <div id="disp-controlados-fields">
+        <div class="settings-field" id="disp-c1-extra" style="display:none">
+          <label for="disp-c1-prazo">Prazo máximo para este caso</label>
+          <select id="disp-c1-prazo">
+            <option value="60">60 dias (padrão)</option>
+            <option value="180-sem-justificativa">180 dias — anticonvulsivante/antiparkinsoniano (sem justificativa)</option>
+            <option value="180-com-justificativa">180 dias — com justificativa assinada do prescritor</option>
+          </select>
+        </div>
+
+        <div class="settings-field" id="disp-b2-extra" style="display:none">
+          <label for="disp-b2-prazo">Prazo máximo para este caso</label>
+          <select id="disp-b2-prazo">
+            <option value="30">30 dias (padrão)</option>
+            <option value="60-sibutramina">60 dias — sibutramina (RDC 133/2016)</option>
+          </select>
+        </div>
+
+        <div class="settings-field">
+          <label for="disp-dias-informados">Dias de tratamento informados na receita (opcional)</label>
+          <input type="text" id="disp-dias-informados" inputmode="numeric" placeholder="Deixe em branco para usar o máximo da categoria" />
+        </div>
+
+        <div class="settings-field">
+          <label for="disp-qtd-dose">Quantidade por dose (comprimidos/unidades)</label>
+          <input type="text" id="disp-qtd-dose" inputmode="decimal" placeholder="Ex.: 1" />
+        </div>
+
+        <div class="settings-field">
+          <label for="disp-vezes-dia">Vezes ao dia</label>
+          <input type="text" id="disp-vezes-dia" inputmode="decimal" placeholder="Ex.: 2" />
+        </div>
+
+        <div class="settings-field">
+          <label for="disp-unid-caixa">Unidades por caixa</label>
+          <input type="text" id="disp-unid-caixa" inputmode="numeric" placeholder="Ex.: 30" />
+        </div>
+      </div>
+
+      <!-- Campos para antibióticos -->
+      <div id="disp-antibiotico-fields" style="display:none">
+        <div class="settings-field">
+          <label for="disp-atb-forma">Forma farmacêutica</label>
+          <select id="disp-atb-forma">
+            <option value="solido">Comprimido / Cápsula</option>
+            <option value="liquido">Líquido (suspensão/xarope)</option>
+          </select>
+        </div>
+
+        <div id="disp-atb-solido-fields">
+          <div class="settings-field">
+            <label for="disp-atb-qtd-dose">Quantidade por dose (comprimidos/cápsulas)</label>
+            <input type="text" id="disp-atb-qtd-dose" inputmode="decimal" placeholder="Ex.: 1" />
+          </div>
+          <div class="settings-field">
+            <label for="disp-atb-unid-caixa">Unidades por caixa</label>
+            <input type="text" id="disp-atb-unid-caixa" inputmode="numeric" placeholder="Ex.: 21" />
+          </div>
+        </div>
+
+        <div id="disp-atb-liquido-fields" style="display:none">
+          <div class="settings-field">
+            <label for="disp-atb-ml-dose">mL por dose</label>
+            <input type="text" id="disp-atb-ml-dose" inputmode="decimal" placeholder="Ex.: 10" />
+          </div>
+          <div class="settings-field">
+            <label for="disp-atb-ml-frasco">mL que o frasco vem</label>
+            <input type="text" id="disp-atb-ml-frasco" inputmode="decimal" placeholder="Ex.: 70" />
+          </div>
+        </div>
+
+        <div class="settings-field">
+          <label for="disp-atb-vezes-dia">Vezes ao dia</label>
+          <input type="text" id="disp-atb-vezes-dia" inputmode="decimal" placeholder="Ex.: 2" />
+        </div>
+
+        <div class="settings-field">
+          <label for="disp-atb-dias">Dias de tratamento (prescritos pelo médico)</label>
+          <input type="text" id="disp-atb-dias" inputmode="numeric" placeholder="Ex.: 10" />
+        </div>
+      </div>
+
+      <button class="btn-modal-primary btn-disp-calcular" id="disp-calcular" type="button">Calcular</button>
+
+      <div class="disp-resultado" id="disp-resultado"></div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="disp-fechar" type="button">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · TELEFONES DAS UNIDADES ===================== -->
+  <div class="modal-overlay" id="telefones-overlay">
+    <div class="modal-box modal-box-md">
+      <div class="modal-title-row">
+        <h2 class="modal-title">📞 Telefones das unidades</h2>
+        <button class="modal-icon-btn" id="btn-filiais-config" type="button" title="Configurar unidades e telefones (requer senha)">⚙️</button>
+      </div>
+      <p class="modal-desc">Selecione a unidade para gerar o script já com o número certo.</p>
+
+      <div class="settings-field">
+        <label for="filial-select">Unidade</label>
+        <select id="filial-select"></select>
+      </div>
+
+      <div class="settings-field">
+        <label>Prévia</label>
+        <div class="telefone-preview" id="telefone-preview"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="telefones-close" type="button">Fechar</button>
+        <button class="btn-modal-primary" id="telefones-copy" type="button">⧉ Copiar mensagem</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · CONFIGURAR UNIDADES E TELEFONES ===================== -->
+  <div class="modal-overlay" id="filiais-overlay">
+    <div class="modal-box modal-box-lg">
+      <h2 class="modal-title">⚙️ Configurar unidades e telefones</h2>
+      <p class="modal-desc">Edite os telefones das unidades existentes ou adicione novas (ex.: F17, F18...). Cada unidade pode ter até dois números — o segundo é opcional.</p>
+
+      <div class="filiais-head">
+        <span>Código</span>
+        <span>Nome / bairro</span>
+        <span>Telefone 1</span>
+        <span>Telefone 2</span>
+        <span></span>
+      </div>
+      <div id="filiais-list"></div>
+      <button class="btn-add" id="add-filial" type="button">+ Adicionar unidade</button>
+
+      <div class="settings-field">
+        <label>Script com 1 telefone <span class="label-hint">mantenha {{UNIDADE}} e {{TELEFONE1}}</span></label>
+        <textarea id="cfg-telefone-singular" rows="4"></textarea>
+      </div>
+
+      <div class="settings-field">
+        <label>Script com 2 telefones <span class="label-hint">mantenha {{UNIDADE}}, {{TELEFONE1}} e {{TELEFONE2}}</span></label>
+        <textarea id="cfg-telefone-plural" rows="4"></textarea>
+      </div>
+
+      <p class="modal-error" id="filiais-error"></p>
+
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="filiais-restore" type="button">Restaurar scripts padrão</button>
+        <button class="btn-modal-secondary" id="filiais-cancel" type="button">Cancelar</button>
+        <button class="btn-modal-primary" id="filiais-save" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · CONFIRMAÇÃO ===================== -->
+  <div class="modal-overlay" id="confirm-overlay">
+    <div class="modal-box">
+      <h2 class="modal-title">Confirmar ação</h2>
+      <p class="modal-desc" id="confirm-mensagem"></p>
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="confirm-cancelar" type="button">Cancelar</button>
+        <button class="btn-modal-primary btn-confirm-danger" id="confirm-confirmar" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · SENHA ===================== -->
+  <div class="modal-overlay" id="password-overlay">
+    <div class="modal-box">
+      <h2 class="modal-title">🔒 Configurações protegidas</h2>
+      <p class="modal-desc">Digite a senha para editar os textos padrão dos scripts.</p>
+      <input type="password" id="password-input" class="modal-input" placeholder="Senha" autocomplete="off" />
+      <p class="modal-error" id="password-error"></p>
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="password-cancel" type="button">Cancelar</button>
+        <button class="btn-modal-primary" id="password-confirm" type="button">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL · CONFIGURAÇÕES ===================== -->
+  <div class="modal-overlay" id="settings-overlay">
+    <div class="modal-box modal-box-lg">
+      <h2 class="modal-title">⚙️ Configurações dos scripts</h2>
+      <p class="modal-desc">Edite os textos padrão usados nas telas. Os trechos entre chaves duplas, como <code>{{ATENDENTE}}</code> e <code>{{LINK}}</code>, são preenchidos automaticamente pelo app e precisam continuar no texto.</p>
+
+      <div class="settings-field">
+        <label>Saudação (tela 01) <span class="label-hint">mantenha {{ATENDENTE}}</span></label>
+        <textarea id="cfg-boasvindas" rows="7"></textarea>
+      </div>
+
+      <div class="settings-field">
+        <label>Entrega (tela 03) <span class="label-hint">mantenha {{LINK}}</span></label>
+        <textarea id="cfg-entrega" rows="10"></textarea>
+      </div>
+
+      <div class="settings-field">
+        <label>Fora do horário / iFood (tela 04)</label>
+        <textarea id="cfg-forahorario" rows="5"></textarea>
+      </div>
+
+      <div class="settings-field">
+        <label>Endereço (botão "Endereço" no topo)</label>
+        <textarea id="cfg-endereco" rows="3"></textarea>
+      </div>
+
+      <p class="modal-error" id="settings-error"></p>
+
+      <div class="modal-actions">
+        <button class="btn-modal-secondary" id="settings-restore" type="button">Restaurar padrão</button>
+        <button class="btn-modal-secondary" id="settings-cancel" type="button">Cancelar</button>
+        <button class="btn-modal-primary" id="settings-save" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <template id="atendente-row-template">
+    <div class="atendente-row">
+      <input type="radio" name="atendente-select" class="atendente-radio" title="Usar este atendente na mensagem" />
+      <input type="text" class="atendente-nome" placeholder="Nome do atendente" autocomplete="off" />
+      <button class="atendente-remove" type="button" title="Remover atendente">×</button>
+    </div>
+  </template>
+
+  <template id="item-row-template">
+    <div class="item-row">
+      <input type="text" class="item-qtd" placeholder="1" inputmode="numeric" />
+      <input type="text" class="item-desc" placeholder="Descrição do produto" />
+      <input type="text" class="item-valor" placeholder="0,00" inputmode="decimal" />
+      <button class="item-remove" type="button" title="Remover item">×</button>
+    </div>
+  </template>
+
+  <template id="filial-row-template">
+    <div class="filial-row">
+      <input type="text" class="filial-codigo" placeholder="F17" />
+      <input type="text" class="filial-nome" placeholder="Bairro / nome da unidade" />
+      <input type="text" class="filial-tel1" placeholder="83900000000" inputmode="tel" />
+      <input type="text" class="filial-tel2" placeholder="(opcional)" inputmode="tel" />
+      <button class="filial-remove" type="button" title="Remover unidade">×</button>
+    </div>
+  </template>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
